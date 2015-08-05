@@ -12,19 +12,19 @@
   // Set up canvas
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
-  
-  // Get the width and height from canvas element
+
+  // Get width & height from canvas element
   var width = canvas.width;
   var height = canvas.height;
-  
+
   // Work out width and height in blocks
   var blockSize = 10;
   var widthInBlocks = width / blockSize;
   var heightInBlocks = height / blockSize;
-  
+
   // Set score to 0
   var score = 0;
-  
+
   // Draw border
   var drawBorder = function () {
     ctx.fillStyle = "Gray";
@@ -33,7 +33,7 @@
     ctx.fillRect(0, 0, blockSize, height);
     ctx.fillRect(width - blockSize, 0, blockSize, height);
   };
-  
+
   // Draw score in top-left corner
   var drawScore = function () {
     ctx.font = "20px Courier";
@@ -42,7 +42,7 @@
     ctx.textBaseline = "top";
     ctx.fillText("Score: " + score, blockSize, blockSize);
   };
-  
+
   // Clear interval and display Game Over
   var gameOver = function () {
     clearInterval(intervalId);
@@ -52,7 +52,7 @@
     ctx.textBaseline = "middle";
     ctx.fillText("Game Over", width /2, height / 2);
   };
-  
+
   // Draw a circle (using the function from Chapter 14)
   var circle = function (x, y, radius, fillCircle) {
     ctx.beginPath();
@@ -63,13 +63,13 @@
       ctx.stroke();
     }
   };
-  
-  // The Block constructor 
+
+  // The Block constructor
   var Block = function (col, row) {
     this.col = col;
     this.row = row;
   };
-  
+
   // Draw a square at block location
   Block.prototype.drawSquare = function (color) {
     var x = this.col * blockSize;
@@ -77,7 +77,7 @@
     ctx.fillStyle = color;
     ctx.fillRect(x, y, blockSize, blockSize);
   };
-  
+
   // Draw a circle at block location
   Block.prototype.drawCircle = function (color) {
     var centerX = this.col * blockSize + blockSize / 2;
@@ -85,12 +85,12 @@
     ctx.fillStyle = color;
     circle(centerX, centerY, blockSize / 2, true);
   };
-  
+
   // Check if this block is in the same location as another block
   Block.prototype.equal = function (otherBlock) {
     return this.col === otherBlock.col && this.row === otherBlock.row;
   };
-  
+
   // the SNAKE constructor - hiss!
   var Snake = function () {
     this.segments = [
@@ -101,22 +101,22 @@
     this.direction = "right";
     this.nextDirection = "right";
   };
-  
+
   // Draw square for each segment of snake body
   Snake.prototype.draw = function () {
     for (var i = 0; i < this.segments.length; i++) {
       this.segments[i].drawSquare("Blue");
     }
   };
-  
-  // Create new head and add it to beginning of 
+
+  // Create new head and add it to beginning of
   // snake to move snake in its current direction
   Snake.prototype.move = function () {
     var head = this.segments[0];
     var newHead;
-  
+
     this.direction = this.nextDirection;
-  
+
     if (this.direction === "right") {
       newHead = new Block(head.col + 1, head.row);
     } else if (this.direction === "down") {
@@ -126,14 +126,14 @@
     } else if (this.direction === "up") {
       newHead = new Block(head.col, head.row - 1);
     }
-  
+
     if (this.checkCollision(newHead)) {
       gameOver();
       return;
     }
-  
+
     this.segments.unshift(newHead);
-  
+
     if (newHead.equal(apple.position)) {
       score++;
       apple.move();
@@ -141,27 +141,27 @@
       this.segments.pop();
     }
   };
-  
+
   // Check if the snakes head has collided with wall or itself
   Snake.prototype.checkCollision = function (head) {
     var leftCollision = (head.col === 0);
     var topCollision = (head.row === 0);
     var rightCollision = (head.col === widthInBlocks - 1);
     var bottomCollision = (head.row === heightInBlocks - 1);
-    
+
     var wallCollision = leftCollision || topCollision || rightCollision || bottomCollision;
-    
+
     var selfCollision = false;
-    
+
     for (var i = 0; i < this.segments.length; i++) {
       if (head.equal(this.segments[i])) {
         selfCollision = true;
       }
     }
-    
+
     return wallCollision || selfCollision;
   };
-  
+
   // Set snake's next direction based on keyboard
   Snake.prototype.setDirection = function (newDirection) {
     if (this.direction === "up" && newDirection === "down") {
@@ -173,31 +173,31 @@
     } else if (this.direction === "left" && newDirection === "right") {
       return;
     }
-    
+
     this.nextDirection = newDirection;
   };
-  
+
   // Apple constructor
   var Apple = function () {
     this.position = new Block(10, 10);
   };
-  
+
   // Draw a circle at apple location
   Apple.prototype.draw = function () {
     this.position.drawCircle("LimeGreen");
   };
-  
+
   // Move the apple to a new random location
   Apple.prototype.move = function () {
     var randomCol = Math.floor(Math.random() * (widthInBlocks -2)) + 1;
     var randomRow = Math.floor(Math.random() * (heightInBlocks - 2)) + 1;
     this.position = new Block(randomCol, randomRow);
   };
-  
+
   // Create the snake and apple
   var snake = new Snake();
   var apple = new Apple();
-  
+
   // Pass an animation function to setInterval
   varintervalId = setInterval(function () {
   ctx.clearRect(0,0,width,height);
@@ -207,7 +207,7 @@
   apple.draw();
   drawBorder();
   },100);
-  
+
   // Convert keycodes to directions
   var directions = {
     37: "left",
@@ -215,7 +215,7 @@
     39: "right",
     40: "down"
   };
-  
+
   // Keydown handler for direction key presses - jQuery
   $("body").keydown(function (event) {
     var newDirection = directions[event.keyCode];
